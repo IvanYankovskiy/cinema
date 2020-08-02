@@ -1,6 +1,6 @@
 package com.world.cinema.core.config;
 
-import com.world.cinema.core.jdbc.BaseDataAccess;
+import com.world.cinema.core.jdbc.BaseDAO;
 import com.world.cinema.core.jdbc.DataExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +13,8 @@ public class DaoBeansConfig {
 
     @Bean
     @Scope("prototype")
-    public BaseDataAccess baseDao(DataSource dataSource, DataExtractor dataExtractor) {
-        return new BaseDataAccess(dataSource, dataExtractor);
+    public BaseDAO baseDao(DataSource dataSource, DataExtractor dataExtractor) {
+        return new BaseDAO(dataSource, dataExtractor);
     }
 
 }

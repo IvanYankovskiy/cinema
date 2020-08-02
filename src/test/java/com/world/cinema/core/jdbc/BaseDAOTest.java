@@ -18,10 +18,10 @@ import java.util.TreeMap;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
-class BaseDataAccessTest {
+class BaseDAOTest {
 
     @InjectMocks
-    BaseDataAccess baseDataAccess;
+    BaseDAO baseDAO;
 
     @Mock
     DataSource dataSource;
@@ -40,7 +40,7 @@ class BaseDataAccessTest {
         String expected = "insert into TICKET (" + String.join(",", fields.keySet()) +") VALUES (?,?,?)";
 
         //when
-        String result = baseDataAccess.buildInsertStatement(tableName, fields);
+        String result = baseDAO.buildInsertStatement(tableName, fields);
 
         //then
         Assertions.assertEquals(expected, result);
@@ -84,7 +84,7 @@ class BaseDataAccessTest {
                 + valuePlaceHoldersSB.toString() + ")";
 
         //when
-        String result = baseDataAccess.buildInsertStatement(tableName, fields);
+        String result = baseDAO.buildInsertStatement(tableName, fields);
 
         //then
         Assertions.assertEquals(expected, result);

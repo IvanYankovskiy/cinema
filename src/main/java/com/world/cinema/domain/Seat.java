@@ -7,16 +7,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Setter
 @Getter
+@Setter
 @Accessors(chain = true)
-@TableName("cinema_hall")
-public class CinemaHall {
+@TableName("seats")
+public class Seat {
 
-    @Id(sequenceName = "hall_id_sequence")
+    @Id(sequenceName = "seat_id_sequence")
     @ColumnName("id")
     private Integer id;
 
-    @ColumnName("name")
-    private String name;
+    @ColumnName("hall_id")
+    private Integer hallId;
+
+    @ColumnName("row")
+    private Integer row;
+
+    @ColumnName("seat")
+    private Integer seat;
+
+    @ColumnName("state")
+    private String state = "f";
 }

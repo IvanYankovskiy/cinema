@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializer {
 
-
-
-
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
 

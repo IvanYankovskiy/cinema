@@ -14,9 +14,11 @@ public class PreparedStatementSetter {
     }
 
     public void setStatementValues(Map<String, FieldDetails> fieldDetailsMap) throws SQLException {
-        int index = 0;
+        int index = 1;
         for (FieldDetails field : fieldDetailsMap.values()) {
             getTypeAndSetValue(index, field);
+            if (field instanceof IdFieldDetails && Objects.isNull(field.getValue()))
+                continue;
             index++;
         }
     }

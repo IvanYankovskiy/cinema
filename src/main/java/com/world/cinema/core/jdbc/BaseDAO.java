@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 
-public class BaseDataAccess {
+public class BaseDAO {
 
     private DataSource dataSource;
 
@@ -18,7 +18,7 @@ public class BaseDataAccess {
     public static final String insertSqlTemplate = "insert into :table_name ";
 
     @Autowired
-    public BaseDataAccess(DataSource dataSource, DataExtractor dataExtractor) {
+    public BaseDAO(DataSource dataSource, DataExtractor dataExtractor) {
         this.dataSource = dataSource;
         this.dataExtractor = dataExtractor;
     }
@@ -27,17 +27,8 @@ public class BaseDataAccess {
         String tableName = dataExtractor.extractTableName(entity);
         Map<String, FieldDetails> fieldDetailsMap = dataExtractor.extractFieldNamesAndValues(entity);
         String sql = buildInsertStatement(tableName, fieldDetailsMap);
-        try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
-                valueSetter.setStatementValues(fieldDetailsMap);
-                int generatedKey = pstmt.executeUpdate();
-                connection.commit();
-                return generatedKey;
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        Integer generatedKey = performModificationQuery(fieldDetailsMap, sql);
+        if (generatedKey != null) return generatedKey;
 
         return null;
     }
@@ -64,6 +55,21 @@ public class BaseDataAccess {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    private Integer performModificationQuery(Map<String, FieldDetails> fieldDetailsMap, String sql) {
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
+                valueSetter.setStatementValues(fieldDetailsMap);
+                int generatedKey = pstmt.executeUpdate();
+                connection.commit();
+                return generatedKey;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 
 }

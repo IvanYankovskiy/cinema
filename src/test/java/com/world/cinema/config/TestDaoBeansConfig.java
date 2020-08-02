@@ -1,6 +1,6 @@
 package com.world.cinema.config;
 
-import com.world.cinema.core.jdbc.BaseDataAccess;
+import com.world.cinema.core.jdbc.BaseDAO;
 import com.world.cinema.core.jdbc.DataExtractor;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,8 @@ public class TestDaoBeansConfig {
 
     @Bean
     @Scope("prototype")
-    public BaseDataAccess baseDataAccess(DataSource dataSource, DataExtractor dataExtractor) {
-        return new BaseDataAccess(dataSource, dataExtractor);
+    public BaseDAO baseDataAccess(DataSource dataSource, DataExtractor dataExtractor) {
+        return new BaseDAO(dataSource, dataExtractor);
     }
 
 }
