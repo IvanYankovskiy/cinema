@@ -1,6 +1,7 @@
 package com.world.cinema.core.jdbc;
 
 import com.world.cinema.core.jdbc.annotations.ColumnName;
+import com.world.cinema.core.jdbc.annotations.Id;
 import com.world.cinema.core.jdbc.annotations.TableName;
 import com.world.cinema.core.jdbc.exception.TableNameNotSupportedException;
 
@@ -17,9 +18,17 @@ public class DataExtractor {
             declaredField.setAccessible(true);
             if (declaredField.isAnnotationPresent(ColumnName.class)) {
                 ColumnName annotation = declaredField.getAnnotation(ColumnName.class);
-                FieldDetails fieldDetail = new FieldDetails();
-                fieldDetail.setType(declaredField.getType());
+                FieldDetails fieldDetail;
+                if (declaredField.isAnnotationPresent(Id.class)) {
+                    Id idAnnotation = declaredField.getAnnotation(Id.class);
+                    fieldDetail = new IdFieldDetails(idAnnotation.sequenceName());
+                } else {
+                    fieldDetail = new FieldDetails();
+                }
+                fieldDetail.setClazz(declaredField.getType());
                 fieldDetail.setValue(declaredField.get(entity));
+
+
                 fieldsDetails.put(annotation.value(), fieldDetail);
             }
         }

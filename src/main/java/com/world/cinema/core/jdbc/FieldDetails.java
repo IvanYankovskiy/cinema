@@ -3,7 +3,6 @@ package com.world.cinema.core.jdbc;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 @Getter
@@ -12,14 +11,14 @@ public class FieldDetails {
 
     private Object value;
 
-    private Type type;
+    private Class clazz;
 
     public FieldDetails() {
     }
 
-    public FieldDetails(Object value, Type type) {
+    public FieldDetails(Object value, Class clazz) {
         this.value = value;
-        this.type = type;
+        this.clazz = clazz;
     }
 
     @Override
@@ -28,11 +27,11 @@ public class FieldDetails {
         if (o == null || getClass() != o.getClass()) return false;
         FieldDetails that = (FieldDetails) o;
         return value.equals(that.value) &&
-                type.equals(that.type);
+                clazz.equals(that.clazz);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, type);
+        return Objects.hash(value, clazz);
     }
 }

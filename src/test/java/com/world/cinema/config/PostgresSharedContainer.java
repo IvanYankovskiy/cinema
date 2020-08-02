@@ -1,9 +1,13 @@
 package com.world.cinema.config;
 
-import org.springframework.stereotype.Component;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
-@Component
+import java.time.Duration;
+
 public class PostgresSharedContainer extends PostgreSQLContainer<PostgresSharedContainer> {
 
     private static final String IMAGE_VERSION = "postgres:9.6";
@@ -18,7 +22,22 @@ public class PostgresSharedContainer extends PostgreSQLContainer<PostgresSharedC
         if (container == null) {
             container = new PostgresSharedContainer();
         }
+        container.addEnv("POSTGRES_USER", "application");
+        container.addEnv("POSTGRES_PASSWORD", "application");
+        container.addEnv("POSTGRES_DB", "cinema");
         return container;
+    }
+
+    public static class Initializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                    "jdbcUrl=" + container.getJdbcUrl(),
+                    "spring.datasource.username=" + container.getUsername(),
+                    "spring.datasource.password=" + container.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+            container.waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(10)));
+        }
     }
 
     @Override

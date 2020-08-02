@@ -31,6 +31,15 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testCompile "org.testcontainers:postgresql:1.14.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.14.3"
+    def junitJupiterVersion = '5.4.2'
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+    testCompile "org.testcontainers:testcontainers:1.14.3"
+    testCompile "org.testcontainers:junit-jupiter:1.14.3"
+
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
     testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.4.6'
 
@@ -40,6 +49,8 @@ dependencies {
 
 }
 
-test {
+tasks.withType(Test) {
     useJUnitPlatform()
 }
+
+test.dependsOn assemble

@@ -1,5 +1,6 @@
 package com.world.cinema.core.config;
 
+import com.world.cinema.core.jdbc.DataExtractor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,11 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         HikariConfig config = new HikariConfig(poolConfigFile);
         return new HikariDataSource(config);
+    }
+
+    @Bean
+    public DataExtractor dataExtractor() {
+        return new DataExtractor();
     }
 
 

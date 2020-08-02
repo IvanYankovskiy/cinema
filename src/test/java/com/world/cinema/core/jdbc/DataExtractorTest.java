@@ -27,7 +27,7 @@ class DataExtractorTest {
         cinemaHall.setName("Main hall");
         Set<String> expectedFieldNames = new HashSet<>();
         Set<FieldDetails> expectedFieldDetails = new HashSet<>();
-        expectedFieldDetails.add(new FieldDetails(cinemaHall.getId(), Integer.class));
+        expectedFieldDetails.add(new IdFieldDetails(cinemaHall.getId(), Integer.class, "id_sequence"));
         expectedFieldDetails.add(new FieldDetails(cinemaHall.getName(), String.class));
 
         Class<?> hallClass = cinemaHall.getClass();

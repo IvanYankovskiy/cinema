@@ -1,11 +1,12 @@
 package com.world.cinema;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/*@SpringBootTest(*//*properties = {
-        "spring.liquibase.change-log=classpath:/db.changelogtest/testChangelogEntrypoint.xml",
-}*//*)*/
+
+@DisplayName("Application test")
 class CinemaApplicationTests {
+
 
     @Test
     void contextLoads() {
