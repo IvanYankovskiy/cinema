@@ -3,11 +3,8 @@ package com.world.cinema.core.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.*;
+import java.util.*;
 
 public class BaseDAO {
 
@@ -15,59 +12,78 @@ public class BaseDAO {
 
     private DataExtractor dataExtractor;
 
-    public static final String insertSqlTemplate = "insert into :table_name ";
+    private StatementBuilder stmntBuilder;
 
     @Autowired
-    public BaseDAO(DataSource dataSource, DataExtractor dataExtractor) {
+    public BaseDAO(DataSource dataSource, DataExtractor dataExtractor, StatementBuilder stmntBuilder) {
         this.dataSource = dataSource;
         this.dataExtractor = dataExtractor;
+        this.stmntBuilder = stmntBuilder;
     }
 
     public Integer insert(Object entity) throws IllegalAccessException {
         String tableName = dataExtractor.extractTableName(entity);
         Map<String, FieldDetails> fieldDetailsMap = dataExtractor.extractFieldNamesAndValues(entity);
-        String sql = buildInsertStatement(tableName, fieldDetailsMap);
+        String sql = stmntBuilder.buildInsertStatement(tableName, fieldDetailsMap);
         Integer generatedKey = performModificationQuery(fieldDetailsMap, sql);
-        if (generatedKey != null) return generatedKey;
-
-        return null;
+        return generatedKey;
     }
 
-    public String buildInsertStatement(String tableName, Map<String, FieldDetails> fields) {
-        String baseSql = insertSqlTemplate.replace(":table_name", tableName);
-        StringBuilder sb = new StringBuilder(baseSql);
-        sb.append("(");
-        sb.append(String.join(",", fields.keySet()));
-        sb.append(")");
-        sb.append(" VALUES (");
-        int numOfValues = fields.values().size();
-        int currentIndex = 0;
-        for (FieldDetails fieldDetails : fields.values()) {
-            if (fieldDetails instanceof IdFieldDetails) {
-                String sequenceName = ((IdFieldDetails) fieldDetails).getSequenceName();
-                sb.append(Objects.isNull(sequenceName) || sequenceName.isEmpty() ? "?" : "nextval('" + sequenceName + "')");
-            } else
-                sb.append("?");
-
-            if (currentIndex < numOfValues -1)
-                sb.append(",");
-            currentIndex++;
+    public <T> boolean insertMultiple(List<T> collection) throws IllegalAccessException {
+        Iterator<T> iterator = collection.iterator();
+        String tableName;
+        if (iterator.hasNext()) {
+            tableName = dataExtractor.extractTableName(iterator.next());
+        } else
+            return false;
+        List<Map<String, FieldDetails>> filedDetailsCollection = new ArrayList<>(collection.size());
+        for (T entity : collection) {
+            filedDetailsCollection.add(dataExtractor.extractFieldNamesAndValues(entity));
         }
-        sb.append(")");
-        return sb.toString();
+        String sql = stmntBuilder.buildInsertStatement(tableName, filedDetailsCollection.get(0));
+        return performBatchModificationQuery(filedDetailsCollection, sql);
+    }
+
+    private boolean performBatchModificationQuery(List<Map<String, FieldDetails>> preparedObjectCollection, String sql) {
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
+                for (Map<String, FieldDetails> fieldDetailsMap : preparedObjectCollection) {
+                    valueSetter.setStatementValues(fieldDetailsMap);
+                    pstmt.addBatch();
+                }
+                int[] batchQueryResults = pstmt.executeBatch();
+                boolean isSucceed = Arrays.stream(batchQueryResults).noneMatch(r -> r < 0);
+                if (isSucceed)
+                    connection.commit();
+                else
+                    connection.rollback();
+                return isSucceed;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 
     private Integer performModificationQuery(Map<String, FieldDetails> fieldDetailsMap, String sql) {
         try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
                 valueSetter.setStatementValues(fieldDetailsMap);
-                int generatedKey = pstmt.executeUpdate();
+                pstmt.executeUpdate();
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
+                int id = 0;
+                if (generatedKeys.next()) {
+                    id = generatedKeys.getInt("id");
+                }
                 connection.commit();
-                return generatedKey;
+
+                return id;
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+
         }
         return null;
     }

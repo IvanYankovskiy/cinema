@@ -20,6 +20,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {BaseDAO.class},
         properties = {
@@ -48,12 +51,13 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_insertSeat_usingSequence() throws IllegalAccessException {
+    public void test_insertSeat_withoutSequence() throws IllegalAccessException {
         CinemaHall entity = new CinemaHall()
+                .setId(789)
                 .setName("TestHall");
         Integer hallId = baseDAO.insert(entity);
 
-        Assertions.assertNotNull(hallId);
+        Assertions.assertEquals(789, hallId);
 
         Seat seat = new Seat()
                 .setHallId(hallId)
@@ -62,6 +66,27 @@ public class BaseDAOTest {
         Integer seatId = baseDAO.insert(seat);
 
         Assertions.assertNotNull(seatId);
+    }
+
+    @Test
+    public void test_insertMultiple_usingSequence() throws IllegalAccessException {
+        CinemaHall entity = new CinemaHall()
+                .setName("TestHall");
+        Integer hallId = baseDAO.insert(entity);
+
+        Assertions.assertNotNull(hallId);
+
+        List<Seat> collectionToInsert = new ArrayList<>();
+        for (int currentRow = 0; currentRow < 2; currentRow++) {
+            for (int seat = 0; seat < 10; seat++) {
+                collectionToInsert.add(new Seat()
+                        .setHallId(hallId)
+                        .setSeat(seat)
+                        .setRow(currentRow));
+            }
+        }
+        boolean isSucceed = baseDAO.insertMultiple(collectionToInsert);
+        Assertions.assertTrue(isSucceed);
     }
 
 }

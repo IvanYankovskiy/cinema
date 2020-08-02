@@ -1,6 +1,7 @@
 package com.world.cinema.core.config;
 
 import com.world.cinema.core.jdbc.DataExtractor;
+import com.world.cinema.core.jdbc.StatementBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,11 @@ public class DataSourceConfig {
     @Bean
     public DataExtractor dataExtractor() {
         return new DataExtractor();
+    }
+
+    @Bean
+    public StatementBuilder stmntBuilder() {
+        return new StatementBuilder();
     }
 
 

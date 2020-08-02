@@ -18,16 +18,10 @@ import java.util.TreeMap;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
-class BaseDAOTest {
+class StatementBuilderTest {
 
     @InjectMocks
-    BaseDAO baseDAO;
-
-    @Mock
-    DataSource dataSource;
-
-    @Mock
-    DataExtractor dataExtractor;
+    private StatementBuilder statementBuilder;
 
     @Test
     public void test_buildInsertStatement() {
@@ -40,7 +34,7 @@ class BaseDAOTest {
         String expected = "insert into TICKET (" + String.join(",", fields.keySet()) +") VALUES (?,?,?)";
 
         //when
-        String result = baseDAO.buildInsertStatement(tableName, fields);
+        String result = statementBuilder.buildInsertStatement(tableName, fields);
 
         //then
         Assertions.assertEquals(expected, result);
@@ -84,7 +78,47 @@ class BaseDAOTest {
                 + valuePlaceHoldersSB.toString() + ")";
 
         //when
-        String result = baseDAO.buildInsertStatement(tableName, fields);
+        String result = statementBuilder.buildInsertStatement(tableName, fields);
+
+        //then
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    public void test_buildInsertStatement_withIdField_idIsProvided() {
+        String tableName = "TICKET";
+        Map<String, FieldDetails> fields = new TreeMap<>();
+        fields.put("id", new IdFieldDetails(12, Integer.class, "movie_id_seq"));
+        fields.put("movie", new FieldDetails("Inception", String.class) );
+        fields.put("date", new FieldDetails(LocalDate.now(), LocalDate.class));
+        fields.put("cost", new FieldDetails(10, Integer.class));
+
+        Iterator<String> keyIterator = fields.keySet().iterator();
+        StringBuilder fieldNameSB = new StringBuilder();
+        StringBuilder valuePlaceHoldersSB = new StringBuilder();
+        while (keyIterator.hasNext()) {
+            String nextName = keyIterator.next();
+            fieldNameSB.append(nextName);
+            FieldDetails fieldDetails = fields.get(nextName);
+            if (fieldDetails instanceof IdFieldDetails) {
+                IdFieldDetails idFieldDetails = (IdFieldDetails) fieldDetails;
+                if (Objects.isNull(idFieldDetails.getValue())) {
+                    valuePlaceHoldersSB.append("nextval('" + idFieldDetails.getSequenceName() + "')");
+                } else {
+                    valuePlaceHoldersSB.append("?");
+                }
+            } else
+                valuePlaceHoldersSB.append("?");
+            if (keyIterator.hasNext()) {
+                fieldNameSB.append(",");
+                valuePlaceHoldersSB.append(",");
+            }
+        }
+        String expected = "insert into TICKET (" + fieldNameSB.toString() + ") VALUES ("
+                + valuePlaceHoldersSB.toString() + ")";
+
+        //when
+        String result = statementBuilder.buildInsertStatement(tableName, fields);
 
         //then
         Assertions.assertEquals(expected, result);
