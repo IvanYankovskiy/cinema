@@ -6,6 +6,7 @@ import java.util.Objects;
 public class StatementBuilder {
 
     public static final String insertSqlTemplate = "insert into :table_name ";
+    public static final String selectAllForClass = "select * from :table_name";
 
 
     public String buildInsertStatement(String tableName, Map<String, FieldDetails> fields) {
@@ -31,5 +32,12 @@ public class StatementBuilder {
         sb.append(")");
         return sb.toString();
     }
+
+    public String buildSelectAllStatement(String tableName) {
+        return selectAllForClass.replace(":table_name", tableName);
+    }
+
+
+
 
 }

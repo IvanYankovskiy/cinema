@@ -1,7 +1,7 @@
 package com.world.cinema.config;
 
+import com.world.cinema.TableCleaner;
 import com.world.cinema.core.jdbc.DataExtractor;
-import com.world.cinema.core.jdbc.StatementBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +45,7 @@ public class TestDataSourceConfig {
     }
 
     @Bean
-    public StatementBuilder stmntBuilder() {
-        return new StatementBuilder();
+    public TableCleaner tableCleaner(DataSource dataSource, DataExtractor dataExtractor) {
+        return new TableCleaner(dataSource, dataExtractor);
     }
-
 }
