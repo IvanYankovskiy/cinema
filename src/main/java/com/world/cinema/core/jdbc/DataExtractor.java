@@ -3,7 +3,10 @@ package com.world.cinema.core.jdbc;
 import com.world.cinema.core.jdbc.annotations.ColumnName;
 import com.world.cinema.core.jdbc.annotations.Id;
 import com.world.cinema.core.jdbc.annotations.TableName;
+import com.world.cinema.core.jdbc.exception.NoPrimaryKeyColumnException;
 import com.world.cinema.core.jdbc.exception.TableNameNotSupportedException;
+import com.world.cinema.core.jdbc.fields.FieldDetails;
+import com.world.cinema.core.jdbc.fields.IdFieldDetails;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -59,6 +62,22 @@ public class DataExtractor {
     public String extractTableName(Object entity) {
         Class<?> entityClass = entity.getClass();
         return extractTableNameFromClass(entityClass);
+    }
+
+    public FieldDetails extractIdColumnNameFromClass(Class<?> entityClass) {
+        for (Field declaredField : entityClass.getDeclaredFields()) {
+            declaredField.setAccessible(true);
+            if (declaredField.isAnnotationPresent(Id.class) && declaredField.isAnnotationPresent(ColumnName.class)) {
+                ColumnName annotation = declaredField.getAnnotation(ColumnName.class);
+                Id idAnnotation = declaredField.getAnnotation(Id.class);
+                FieldDetails fieldDetail = new IdFieldDetails(idAnnotation.sequenceName());
+                fieldDetail.setClazz(declaredField.getType());
+                fieldDetail.setValue(null);
+                fieldDetail.setFieldName(annotation.value());
+                return fieldDetail;
+            }
+        }
+        throw new NoPrimaryKeyColumnException(entityClass);
     }
 
     public String extractTableNameFromClass(Class<?> entityClass) {

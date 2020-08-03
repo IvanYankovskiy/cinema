@@ -1,5 +1,8 @@
 package com.world.cinema.core.jdbc;
 
+import com.world.cinema.core.jdbc.fields.FieldDetails;
+import com.world.cinema.core.jdbc.fields.IdFieldDetails;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;

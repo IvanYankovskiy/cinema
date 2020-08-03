@@ -1,4 +1,4 @@
-package com.world.cinema.core.jdbc;
+package com.world.cinema.core.jdbc.fields;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,14 +9,16 @@ import java.util.Objects;
 @Setter
 public class FieldDetails {
 
+    private String fieldName;
+
     private Object value;
 
-    private Class clazz;
+    private Class<?> clazz;
 
     public FieldDetails() {
     }
 
-    public FieldDetails(Object value, Class clazz) {
+    public FieldDetails(Object value, Class<?> clazz) {
         this.value = value;
         this.clazz = clazz;
     }

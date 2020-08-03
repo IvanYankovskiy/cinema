@@ -1,15 +1,15 @@
 package com.world.cinema.core.jdbc;
 
+import com.world.cinema.core.jdbc.fields.FieldDetails;
+import com.world.cinema.core.jdbc.fields.IdFieldDetails;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Map;

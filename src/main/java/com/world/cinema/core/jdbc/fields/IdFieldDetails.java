@@ -1,4 +1,4 @@
-package com.world.cinema.core.jdbc;
+package com.world.cinema.core.jdbc.fields;
 
 import lombok.Getter;
 import lombok.Setter;

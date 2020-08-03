@@ -1,8 +1,12 @@
 package com.world.cinema.core.jdbc;
 
 import com.world.cinema.core.jdbc.annotations.ColumnName;
+import com.world.cinema.core.jdbc.annotations.Id;
 import com.world.cinema.core.jdbc.annotations.TableName;
+import com.world.cinema.core.jdbc.exception.NoPrimaryKeyColumnException;
 import com.world.cinema.core.jdbc.exception.TableNameNotSupportedException;
+import com.world.cinema.core.jdbc.fields.FieldDetails;
+import com.world.cinema.core.jdbc.fields.IdFieldDetails;
 import com.world.cinema.domain.CinemaHall;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -61,6 +65,30 @@ class DataExtractorTest {
         });
     }
 
+    @Test
+    void test_extractIdFieldName_annotationsArePresent() {
+        FieldDetails fieldDetails = dataExtractor.extractIdColumnNameFromClass(ClassWithId.class);
+        assertNotNull(fieldDetails);
+        assertEquals("id", fieldDetails.getFieldName());
+        assertEquals(Integer.class, fieldDetails.getClazz());
+    }
+
+    @Test
+    void test_extractIdFieldName_annotationsAreNotPresent() {
+        Assertions.assertThrows(NoPrimaryKeyColumnException.class, () -> {
+            dataExtractor.extractIdColumnNameFromClass(TestEntity.class);
+        });
+    }
+
+    @Test
+    void test_extractIdFieldName_onlyOneAnnotationIsPresent() {
+        Assertions.assertThrows(NoPrimaryKeyColumnException.class, () -> {
+            dataExtractor.extractIdColumnNameFromClass(OnlyColumnClass.class);
+        });
+    }
+
+
+
 
     @TableName("table_name")
     class TestEntity {
@@ -71,5 +99,16 @@ class DataExtractorTest {
 
     class NonAnnotatedClass {
 
+    }
+
+    class ClassWithId {
+        @Id(sequenceName = "seq")
+        @ColumnName("id")
+        private Integer id;
+    }
+
+    class OnlyColumnClass {
+        @ColumnName("id")
+        private Integer id;
     }
 }

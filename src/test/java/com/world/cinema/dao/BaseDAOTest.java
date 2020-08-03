@@ -6,6 +6,7 @@ import com.world.cinema.config.TestDataSourceConfig;
 import com.world.cinema.core.config.DaoBeansConfig;
 import com.world.cinema.core.config.DatabaseMigrationsConfig;
 import com.world.cinema.core.jdbc.BaseDAO;
+import com.world.cinema.core.jdbc.fields.ConditionalFieldDetails;
 import com.world.cinema.domain.CinemaHall;
 import com.world.cinema.domain.Seat;
 import org.junit.jupiter.api.Assertions;
@@ -128,6 +129,90 @@ public class BaseDAOTest {
 
         Assertions.assertNotNull(seats);
         Assertions.assertEquals(expectedSeats, new HashSet<>(seats));
+    }
+
+    @Test
+    public void test_selectById() throws IllegalAccessException, InstantiationException {
+        CinemaHall expected = new CinemaHall()
+                .setName("TestHall");
+        Integer resultId = baseDAO.insert(expected);
+        expected.setId(resultId);
+
+        Assertions.assertNotNull(resultId);
+
+        //when
+        CinemaHall selectedById = baseDAO.selectById(CinemaHall.class, resultId);
+
+        //then
+        Assertions.assertEquals(expected, selectedById);
+
+    }
+
+    @Test
+    public void test_selectByParameters() throws IllegalAccessException, InstantiationException {
+        CinemaHall expectedHall = new CinemaHall()
+                .setName("TestHall");
+        Integer expectedHallId = baseDAO.insert(expectedHall);
+        expectedHall.setId(expectedHallId);
+        Assertions.assertNotNull(expectedHallId);
+
+        CinemaHall otherHall = new CinemaHall()
+                .setName("TestHall 2");
+        Integer otherHallId = baseDAO.insert(otherHall);
+        otherHall.setId(otherHallId);
+        Assertions.assertNotNull(otherHallId);
+
+        Seat expectedSeat = new Seat()
+                .setSeat(1)
+                .setHallId(expectedHall.getId())
+                .setRow(1)
+                .setState("f");
+        Integer expectedSeatId = baseDAO.insert(expectedSeat);
+        expectedSeat.setId(expectedSeatId);
+        Assertions.assertNotNull(expectedSeatId);
+
+        Seat excludedSeat = new Seat()
+                .setSeat(2)
+                .setHallId(expectedHall.getId())
+                .setRow(1)
+                .setState("r");
+        Integer excludedSeatId = baseDAO.insert(excludedSeat);
+        excludedSeat.setId(excludedSeatId);
+        Assertions.assertNotNull(excludedSeatId);
+
+        Seat otherSeat = new Seat()
+                .setSeat(1)
+                .setHallId(otherHall.getId())
+                .setRow(1)
+                .setState("f");
+        Integer otherSeatId = baseDAO.insert(otherSeat);
+        otherSeat.setId(otherSeatId);
+        Assertions.assertNotNull(otherSeatId);
+
+        //when
+
+        ConditionalFieldDetails hallIdIsEquals = new ConditionalFieldDetails();
+        hallIdIsEquals.setFieldName("hall_id");
+        hallIdIsEquals.setSign("=");
+        hallIdIsEquals.setValue(expectedHallId);
+        hallIdIsEquals.setClazz(Integer.class);
+
+        ConditionalFieldDetails stateEquals = new ConditionalFieldDetails();
+        stateEquals.setFieldName("state");
+        stateEquals.setSign("=");
+        stateEquals.setValue("f");
+        stateEquals.setClazz(String.class);
+        List<ConditionalFieldDetails> conditions = new ArrayList<>();
+        conditions.add(hallIdIsEquals);
+        conditions.add(stateEquals);
+
+        //when
+        List<Seat> resultSeats = baseDAO.selectByParametersConnectedByAnd(conditions, Seat.class);
+
+        //then
+        Assertions.assertNotNull(resultSeats);
+        Assertions.assertEquals(1, resultSeats.size());
+        Assertions.assertEquals(expectedSeat, resultSeats.get(0));
     }
 
 }
