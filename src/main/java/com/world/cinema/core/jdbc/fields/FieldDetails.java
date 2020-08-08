@@ -9,7 +9,7 @@ import java.util.Objects;
 @Setter
 public class FieldDetails {
 
-    private String fieldName;
+    private String tableFieldName;
 
     private Object value;
 
@@ -25,8 +25,8 @@ public class FieldDetails {
         this.clazz = clazz;
     }
 
-    public FieldDetails(String fieldName, Object value, Class<?> clazz) {
-        this.fieldName = fieldName;
+    public FieldDetails(String tableFieldName, Object value, Class<?> clazz) {
+        this.tableFieldName = tableFieldName;
         this.value = value;
         this.clazz = clazz;
     }
@@ -36,7 +36,7 @@ public class FieldDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FieldDetails that = (FieldDetails) o;
-        return Objects.equals(fieldName, that.fieldName) &&
+        return tableFieldName.equals(that.tableFieldName) &&
                 value.equals(that.value) &&
                 clazz.equals(that.clazz) &&
                 Objects.equals(statementIndex, that.statementIndex);
@@ -44,6 +44,6 @@ public class FieldDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(fieldName, value, clazz, statementIndex);
+        return Objects.hash(tableFieldName, value, clazz, statementIndex);
     }
 }

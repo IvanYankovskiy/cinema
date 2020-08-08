@@ -3,11 +3,9 @@ package com.world.cinema.core.jdbc;
 import com.world.cinema.core.jdbc.fields.FieldDetails;
 import com.world.cinema.core.jdbc.fields.IdFieldDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
-public class EntityStatementBuilder {
+public class EntityQueryBuilder {
 
     public static final String insertSqlTemplate = "insert into :table_name ";
     public static final String selectAllForClass = "select * from :table_name";
@@ -24,7 +22,7 @@ public class EntityStatementBuilder {
         int currentIndex = 1;
         int iteration = 1;
         for (FieldDetails fieldDetails : fields) {
-            fieldNamesBuilder.append(fieldDetails.getFieldName());
+            fieldNamesBuilder.append(fieldDetails.getTableFieldName());
             if (fieldDetails instanceof IdFieldDetails && Objects.isNull(fieldDetails.getValue())) {
                 String sequenceName = ((IdFieldDetails) fieldDetails).getSequenceName();
                 fieldValuesPlaceholderBuilder.append("nextval('")

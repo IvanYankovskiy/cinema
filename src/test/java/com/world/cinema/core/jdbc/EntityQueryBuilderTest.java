@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-class EntityStatementBuilderTest {
+class EntityQueryBuilderTest {
 
-    private EntityStatementBuilder builder;
+    private EntityQueryBuilder builder;
 
     @BeforeEach
     public void init() {
-        this.builder = new EntityStatementBuilder();
+        this.builder = new EntityQueryBuilder();
     }
 
     @Test
@@ -40,22 +40,22 @@ class EntityStatementBuilderTest {
         Collection<FieldDetails> nonConditionalFields = query.getNonConditionalFields();
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("id")
+                    return fieldDetails.getTableFieldName().equals("id")
                             && Objects.isNull(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("movie")
+                    return fieldDetails.getTableFieldName().equals("movie")
                             && Integer.valueOf(1).equals(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("date")
+                    return fieldDetails.getTableFieldName().equals("date")
                             && Integer.valueOf(2).equals(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("cost")
+                    return fieldDetails.getTableFieldName().equals("cost")
                             && Integer.valueOf(3).equals(fieldDetails.getStatementIndex());
                 }));
     }
@@ -76,12 +76,12 @@ class EntityStatementBuilderTest {
         Collection<FieldDetails> nonConditionalFields = query.getNonConditionalFields();
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("id")
+                    return fieldDetails.getTableFieldName().equals("id")
                             && Objects.isNull(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getFieldName().equals("movie")
+                    return fieldDetails.getTableFieldName().equals("movie")
                             && Integer.valueOf(1).equals(fieldDetails.getStatementIndex());
                 }));
     }

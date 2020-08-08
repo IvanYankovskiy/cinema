@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class BaseDAO {
@@ -25,7 +26,7 @@ public class BaseDAO {
     public <T> Integer insert(T entity) throws IllegalAccessException {
         String tableName = dataExtractor.extractTableName(entity);
         Map<String, FieldDetails> fieldDetailsMap = dataExtractor.extractFieldNamesAndValues(entity);
-        EntityStatementBuilder stmntBuilder = new EntityStatementBuilder();
+        EntityQueryBuilder stmntBuilder = new EntityQueryBuilder();
         Query insertEntityQuery = stmntBuilder.buildInsertStatement(tableName, fieldDetailsMap.values());
         return performModificationQuery(insertEntityQuery);
     }
@@ -53,12 +54,12 @@ public class BaseDAO {
         return selectAll(sql, clazz);
     }
 
-    public <T> T selectById(Class<T> clazz, Integer id) throws IllegalAccessException, InstantiationException {
+    public <T, I> T selectById(Class<T> clazz, I id) throws IllegalAccessException, InstantiationException {
         String tableName = dataExtractor.extractTableNameFromClass(clazz);
         FieldDetails idColumn = dataExtractor.extractIdColumnNameFromClass(clazz);
         idColumn.setValue(id);
         StatementBuilder statementBuilder = new StatementBuilder();
-        String sql = statementBuilder.buildSelectByIdStatement(tableName, idColumn.getFieldName());
+        String sql = statementBuilder.buildSelectByIdStatement(tableName, idColumn.getTableFieldName());
         return selectById(sql, clazz, idColumn);
 
     }
@@ -68,6 +69,25 @@ public class BaseDAO {
         StatementBuilder statementBuilder = new StatementBuilder();
         String sql = statementBuilder.buildSelectByParametersConnectedByAnd(tableName, queryParams);
         return selectByParameters(sql, expectedEntityClass, queryParams);
+    }
+
+    public List<Integer> executeUpdate(Query query) {
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement pstmt = connection.prepareStatement(query.getSql())) {
+                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
+                query.setValuesToPreparedStatement(pstmt);
+                int[] batchQueryResults = pstmt.executeBatch();
+                boolean isSucceed = Arrays.stream(batchQueryResults).noneMatch(r -> r < 0);
+                if (isSucceed)
+                    connection.commit();
+                else
+                    connection.rollback();
+                return Arrays.stream(batchQueryResults).boxed().collect(Collectors.toList());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     private boolean performBatchModificationQuery(List<Map<String, FieldDetails>> preparedObjectCollection, String sql) {
@@ -136,7 +156,7 @@ public class BaseDAO {
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
                 Map<String, FieldDetails> fieldDetailsMap = new HashMap<>();
-                fieldDetailsMap.put(fieldDetails.getFieldName(), fieldDetails);
+                fieldDetailsMap.put(fieldDetails.getTableFieldName(), fieldDetails);
                 valueSetter.setStatementValues(fieldDetailsMap);
                 ResultSet resultSet = pstmt.executeQuery();
                 T entity = null;
@@ -158,7 +178,7 @@ public class BaseDAO {
                 PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
                 Map<String, FieldDetails> fieldDetailsMap = new HashMap<>();
                 for (ConditionalFieldDetails conditionalFieldDetail : conditionalFieldDetails) {
-                    fieldDetailsMap.put(conditionalFieldDetail.getFieldName(), conditionalFieldDetail);
+                    fieldDetailsMap.put(conditionalFieldDetail.getTableFieldName(), conditionalFieldDetail);
                 }
                 valueSetter.setStatementValues(fieldDetailsMap);
                 try (ResultSet resultSet = pstmt.executeQuery()) {

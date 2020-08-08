@@ -41,7 +41,7 @@ public class CinemaHallViewService {
 
         ConditionalFieldDetails conditionHallIdEquals = new ConditionalFieldDetails();
         conditionHallIdEquals.setClazz(Integer.class);
-        conditionHallIdEquals.setFieldName("hall_id");
+        conditionHallIdEquals.setTableFieldName("hall_id");
         conditionHallIdEquals.setValue(cinemaHallId);
         conditionHallIdEquals.setSign("=");
         List<ConditionalFieldDetails> queryParams = new ArrayList<>();

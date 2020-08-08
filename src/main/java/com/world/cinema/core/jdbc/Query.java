@@ -39,6 +39,9 @@ public class Query {
         for (FieldDetails fieldDetail : nonConditionalFields) {
             setParameterToPreparedStatement(fieldDetail, preparedStatement);
         }
+        for (ConditionalFieldDetails conditionalFieldDetails : conditionalFields) {
+            setParameterToPreparedStatement(conditionalFieldDetails, preparedStatement);
+        }
     }
 
     private void setParameterToPreparedStatement(FieldDetails fieldDetails, PreparedStatement preparedStatement) throws SQLException {

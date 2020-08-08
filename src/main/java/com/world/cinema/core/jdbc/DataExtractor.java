@@ -32,9 +32,7 @@ public class DataExtractor {
                 }
                 fieldDetail.setClazz(declaredField.getType());
                 fieldDetail.setValue(declaredField.get(entity));
-                fieldDetail.setFieldName(annotation.value());
-
-
+                fieldDetail.setTableFieldName(annotation.value());
                 fieldsDetails.put(annotation.value(), fieldDetail);
             }
         }
@@ -74,7 +72,7 @@ public class DataExtractor {
                 FieldDetails fieldDetail = new IdFieldDetails(idAnnotation.sequenceName());
                 fieldDetail.setClazz(declaredField.getType());
                 fieldDetail.setValue(null);
-                fieldDetail.setFieldName(annotation.value());
+                fieldDetail.setTableFieldName(annotation.value());
                 return fieldDetail;
             }
         }

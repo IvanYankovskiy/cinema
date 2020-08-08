@@ -20,8 +20,8 @@ public class IdFieldDetails extends FieldDetails {
         this.sequenceName = sequenceName;
     }
 
-    public IdFieldDetails(String fieldName, Object value, Class<?> clazz, String sequenceName) {
-        super(fieldName, value, clazz);
+    public IdFieldDetails(String tableFieldName, Object value, Class<?> clazz, String sequenceName) {
+        super(tableFieldName, value, clazz);
         this.sequenceName = sequenceName;
     }
 

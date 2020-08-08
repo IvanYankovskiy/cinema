@@ -192,13 +192,13 @@ public class BaseDAOTest {
         //when
 
         ConditionalFieldDetails hallIdIsEquals = new ConditionalFieldDetails();
-        hallIdIsEquals.setFieldName("hall_id");
+        hallIdIsEquals.setTableFieldName("hall_id");
         hallIdIsEquals.setSign("=");
         hallIdIsEquals.setValue(expectedHallId);
         hallIdIsEquals.setClazz(Integer.class);
 
         ConditionalFieldDetails stateEquals = new ConditionalFieldDetails();
-        stateEquals.setFieldName("state");
+        stateEquals.setTableFieldName("state");
         stateEquals.setSign("=");
         stateEquals.setValue("f");
         stateEquals.setClazz(String.class);
