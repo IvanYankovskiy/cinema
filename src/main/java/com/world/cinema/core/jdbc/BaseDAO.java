@@ -25,9 +25,9 @@ public class BaseDAO {
     public <T> Integer insert(T entity) throws IllegalAccessException {
         String tableName = dataExtractor.extractTableName(entity);
         Map<String, FieldDetails> fieldDetailsMap = dataExtractor.extractFieldNamesAndValues(entity);
-        StatementBuilder stmntBuilder = new StatementBuilder();
-        String sql = stmntBuilder.buildInsertStatement(tableName, fieldDetailsMap);
-        return performModificationQuery(fieldDetailsMap, sql);
+        EntityStatementBuilder stmntBuilder = new EntityStatementBuilder();
+        Query insertEntityQuery = stmntBuilder.buildInsertStatement(tableName, fieldDetailsMap.values());
+        return performModificationQuery(insertEntityQuery);
     }
 
     public <T> boolean insertMultiple(List<T> collection) throws IllegalAccessException {
@@ -92,11 +92,10 @@ public class BaseDAO {
         return false;
     }
 
-    private Integer performModificationQuery(Map<String, FieldDetails> fieldDetailsMap, String sql) {
+    private Integer performModificationQuery(Query query) {
         try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
-                valueSetter.setStatementValues(fieldDetailsMap);
+            try (PreparedStatement pstmt = connection.prepareStatement(query.getSql(), Statement.RETURN_GENERATED_KEYS)) {
+                query.setValuesToPreparedStatement(pstmt);
                 pstmt.executeUpdate();
                 ResultSet generatedKeys = pstmt.getGeneratedKeys();
                 int id = 0;

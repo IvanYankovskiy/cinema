@@ -14,6 +14,8 @@ public class StatementBuilder {
     public static final String selectAllForClass = "select * from :table_name";
     public static final String selectEntityById = "select * from :table_name where :id = ?";
     public static final String selectByParameters = "select * from :table_name where :parameters";
+    public static final String updateSqlById = "update :table_name set :updatable_fields where :id = ?";
+
 
     public String buildInsertStatement(String tableName, Map<String, FieldDetails> fields) {
         String baseSql = insertSqlTemplate.replace(":table_name", tableName);
@@ -64,6 +66,28 @@ public class StatementBuilder {
                 .replace(":parameters", sb.toString());
 
     }
+
+
+    public String buildUpdateById(String tableName, Map<String, FieldDetails> fields) {
+        String baseSql = updateSqlById.replace(":table_name", tableName);
+        StringBuilder sb = new StringBuilder(baseSql);
+        int numOfValues = fields.values().size();
+        int currentIndex = 0;
+        for (FieldDetails fieldDetails : fields.values()) {
+            if (fieldDetails instanceof IdFieldDetails && Objects.isNull(fieldDetails.getValue())) {
+                String sequenceName = ((IdFieldDetails) fieldDetails).getSequenceName();
+                sb.append(Objects.isNull(sequenceName) || sequenceName.isEmpty() ? "?" : "nextval('" + sequenceName + "')");
+            } else
+                sb.append("?");
+
+            if (currentIndex < numOfValues -1)
+                sb.append(",");
+            currentIndex++;
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
 
 
 

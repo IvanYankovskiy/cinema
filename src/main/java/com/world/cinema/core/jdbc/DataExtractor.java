@@ -32,6 +32,7 @@ public class DataExtractor {
                 }
                 fieldDetail.setClazz(declaredField.getType());
                 fieldDetail.setValue(declaredField.get(entity));
+                fieldDetail.setFieldName(annotation.value());
 
 
                 fieldsDetails.put(annotation.value(), fieldDetail);
