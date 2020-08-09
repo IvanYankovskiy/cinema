@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
         properties = {
                 "spring.liquibase.change-log=classpath:/db.changelogtest/testChangelogEntrypoint.xml",
         })
-@TestPropertySource(locations={"classpath:application-test.properties"})
+@TestPropertySource(locations = {"classpath:application-test.properties"})
 @ContextConfiguration(classes = {TestDataSourceConfig.class, DaoBeansConfig.class, DatabaseMigrationsConfig.class},
         initializers = {PostgresSharedContainer.Initializer.class})
 @Testcontainers
@@ -122,7 +122,7 @@ class SeatDAOTest {
                         .setSeatNumber(seat)
                         .setRow(currentRow);
                 //IMPORTANT: 1 seat is already reserved!
-                if (seat == 2 && currentRow ==1)
+                if (seat == 2 && currentRow == 1)
                     seatEntity.setState("r");
                 collectionToInsert.add(seatEntity);
             }
@@ -146,7 +146,7 @@ class SeatDAOTest {
                 .filter(s -> {
                     return s.getRow().equals(1)
                             && (s.getSeatNumber().equals(1) || s.getSeatNumber().equals(2))
-                            || (s.getRow().equals(2) && s.getSeatNumber().equals(1)) ;
+                            || (s.getRow().equals(2) && s.getSeatNumber().equals(1));
                 })
                 .map(Seat::getId)
                 .collect(Collectors.toList());
@@ -157,6 +157,11 @@ class SeatDAOTest {
         //then
         Assertions.assertEquals(2, result);
         Assertions.assertNotEquals(result, toUpdate.size());
+
+        //proof that transaction was rolled back
+        List<Seat> seatsInDbAfterRollback = baseDAO.selectAll(Seat.class);
+        Assertions.assertNotNull(seatsInDbAfterRollback);
+        Assertions.assertEquals(seats, seatsInDbAfterRollback);
     }
 
     @Test
