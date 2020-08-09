@@ -9,7 +9,7 @@ import com.world.cinema.core.jdbc.BaseDAO;
 import com.world.cinema.core.jdbc.fields.ConditionalFieldDetails;
 import com.world.cinema.domain.CinemaHall;
 import com.world.cinema.domain.Seat;
-import com.world.cinema.service.exceptions.CinemaHallNotFound;
+import com.world.cinema.service.exceptions.CinemaHallNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class CinemaHallViewService {
     public CinemaHallFullDTO getCinemaHallDetailsById(Integer cinemaHallId) throws InstantiationException, IllegalAccessException {
         CinemaHall cinemaHall = baseDAO.selectById(CinemaHall.class, cinemaHallId);
         if (Objects.isNull(cinemaHall)) {
-            throw new CinemaHallNotFound(cinemaHallId);
+            throw new CinemaHallNotFoundException(cinemaHallId);
         }
 
         ConditionalFieldDetails conditionHallIdEquals = new ConditionalFieldDetails();

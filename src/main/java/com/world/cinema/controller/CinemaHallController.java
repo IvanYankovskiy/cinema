@@ -24,7 +24,8 @@ public class CinemaHallController {
     }
 
     @GetMapping("hall/{id}/seats")
-    public CinemaHallFullDTO getHallDetails(@PathVariable("id") @NotNull Integer hallId) throws IllegalAccessException, InstantiationException {
+    public CinemaHallFullDTO getHallDetails(@PathVariable("id") @NotNull(message = "HallId can't be null or empty")
+                                                        Integer hallId) throws IllegalAccessException, InstantiationException {
         return cinemaHallViewService.getCinemaHallDetailsById(hallId);
     }
 
