@@ -219,7 +219,7 @@ class BaseDAOTest {
 
 
     @Test
-    void test_selectByIds() throws IllegalAccessException, InstantiationException {
+    void test_selectByIds() throws IllegalAccessException {
         CinemaHall aHall = new CinemaHall()
                 .setId(1)
                 .setName("Hall A");

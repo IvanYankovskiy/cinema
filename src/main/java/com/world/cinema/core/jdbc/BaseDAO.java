@@ -1,6 +1,7 @@
 package com.world.cinema.core.jdbc;
 
 import com.world.cinema.core.jdbc.exception.DatabaseException;
+import com.world.cinema.core.jdbc.exception.ResultSetParsingException;
 import com.world.cinema.core.jdbc.fields.ConditionalFieldDetails;
 import com.world.cinema.core.jdbc.fields.FieldDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class BaseDAO {
         return selectById(sql, clazz, idColumn);
     }
 
-    public <T, I> List<T> selectByIds(Class<T> clazz, List<I> ids) throws IllegalAccessException, InstantiationException {
+    public <T, I> List<T> selectByIds(Class<T> clazz, List<I> ids) {
         EntityQueryBuilder queryBuilder = new EntityQueryBuilder();
         Query query = queryBuilder.buildSelectByIds(clazz, ids);
         return selectByIds(clazz, query);
@@ -142,7 +143,7 @@ public class BaseDAO {
         }
     }
 
-    private <T> List<T> selectByIds(Class<T> clazz, Query query) throws InstantiationException, IllegalAccessException {
+    private <T> List<T> selectByIds(Class<T> clazz, Query query) {
         List<T> queryResults = new ArrayList<>();
         try(Connection connection = dataSource.getConnection()) {
             try (PreparedStatement pstmt = connection.prepareStatement(query.getSql())) {
@@ -159,6 +160,9 @@ public class BaseDAO {
             String msg = "Error during selecting by ids";
             log.error(msg, throwable);
             throw new DatabaseException(msg);
+        } catch (IllegalAccessException | InstantiationException throwable) {
+            log.error("Error during parsing ResultSet.", throwable);
+            throw new ResultSetParsingException(clazz);
         }
     }
 

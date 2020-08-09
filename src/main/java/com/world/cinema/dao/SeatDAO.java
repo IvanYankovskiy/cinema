@@ -6,6 +6,7 @@ import com.world.cinema.core.jdbc.Query;
 import com.world.cinema.core.jdbc.exception.DatabaseException;
 import com.world.cinema.core.jdbc.exception.QueryParametersAreEmptyException;
 import com.world.cinema.core.jdbc.fields.ConditionalFieldDetails;
+import com.world.cinema.domain.Seat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,6 +48,10 @@ public class SeatDAO {
             log.error(msg, throwable);
             throw new DatabaseException(msg);
         }
+    }
+
+    public List<Seat> selectByIds(List<Integer> ids) {
+        return baseDAO.selectByIds(Seat.class, ids);
     }
 
     private Query createQueryForReserveSeatsByIdsIfAllFree(List<Integer> seatIds, String queryString) {
