@@ -56,7 +56,7 @@ public class StatementBuilder {
         int numOfValues = conditionalFields.size();
         int currentIndex = 0;
         for (ConditionalFieldDetails fieldDetails : conditionalFields) {
-            sb.append(fieldDetails.getTableFieldName());
+            sb.append(fieldDetails.getFieldNameAsInDb());
             sb.append(fieldDetails.getSign());
             sb.append("?");
             if (currentIndex < numOfValues -1)

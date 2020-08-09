@@ -59,7 +59,7 @@ class DataExtractorTest {
     void test_extractIdFieldName_annotationsArePresent() {
         FieldDetails fieldDetails = dataExtractor.extractIdColumnNameFromClass(ClassWithId.class);
         assertNotNull(fieldDetails);
-        assertEquals("id", fieldDetails.getTableFieldName());
+        assertEquals("id", fieldDetails.getFieldNameAsInDb());
         assertEquals(Integer.class, fieldDetails.getClazz());
     }
 

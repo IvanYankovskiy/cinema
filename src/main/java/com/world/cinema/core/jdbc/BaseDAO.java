@@ -27,7 +27,7 @@ public class BaseDAO {
         String tableName = dataExtractor.extractTableName(entity);
         Map<String, FieldDetails> fieldDetailsMap = dataExtractor.extractFieldNamesAndValues(entity);
         EntityQueryBuilder stmntBuilder = new EntityQueryBuilder();
-        Query insertEntityQuery = stmntBuilder.buildInsertStatement(tableName, fieldDetailsMap.values());
+        Query insertEntityQuery = stmntBuilder.buildInsert(tableName, fieldDetailsMap.values());
         return performModificationQuery(insertEntityQuery);
     }
 
@@ -59,9 +59,14 @@ public class BaseDAO {
         FieldDetails idColumn = dataExtractor.extractIdColumnNameFromClass(clazz);
         idColumn.setValue(id);
         StatementBuilder statementBuilder = new StatementBuilder();
-        String sql = statementBuilder.buildSelectByIdStatement(tableName, idColumn.getTableFieldName());
+        String sql = statementBuilder.buildSelectByIdStatement(tableName, idColumn.getFieldNameAsInDb());
         return selectById(sql, clazz, idColumn);
+    }
 
+    public <T, I> List<T> selectByIds(Class<T> clazz, List<I> ids) throws IllegalAccessException, InstantiationException {
+        EntityQueryBuilder queryBuilder = new EntityQueryBuilder();
+        Query query = queryBuilder.buildSelectByIds(clazz, ids);
+        return selectByIds(clazz, query);
     }
 
     public <T> List<T> selectByParametersConnectedByAnd(List<ConditionalFieldDetails> queryParams, Class<T> expectedEntityClass) throws IllegalAccessException, InstantiationException {
@@ -137,12 +142,32 @@ public class BaseDAO {
         }
     }
 
+    private <T> List<T> selectByIds(Class<T> clazz, Query query) throws InstantiationException, IllegalAccessException {
+        List<T> queryResults = new ArrayList<>();
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement pstmt = connection.prepareStatement(query.getSql())) {
+                query.setValuesToPreparedStatement(pstmt);
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        T entity = dataExtractor.createEntityFromResult(clazz, resultSet);
+                        queryResults.add(entity);
+                    }
+                }
+                return queryResults;
+            }
+        } catch (SQLException throwable) {
+            String msg = "Error during selecting by ids";
+            log.error(msg, throwable);
+            throw new DatabaseException(msg);
+        }
+    }
+
     private <T> T selectById(String sql, Class<T> clazz, FieldDetails fieldDetails) throws InstantiationException, IllegalAccessException {
         try(Connection connection = dataSource.getConnection()) {
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
                 Map<String, FieldDetails> fieldDetailsMap = new HashMap<>();
-                fieldDetailsMap.put(fieldDetails.getTableFieldName(), fieldDetails);
+                fieldDetailsMap.put(fieldDetails.getFieldNameAsInDb(), fieldDetails);
                 valueSetter.setStatementValues(fieldDetailsMap);
                 ResultSet resultSet = pstmt.executeQuery();
                 T entity = null;
@@ -165,7 +190,7 @@ public class BaseDAO {
                 PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
                 Map<String, FieldDetails> fieldDetailsMap = new HashMap<>();
                 for (ConditionalFieldDetails conditionalFieldDetail : conditionalFieldDetails) {
-                    fieldDetailsMap.put(conditionalFieldDetail.getTableFieldName(), conditionalFieldDetail);
+                    fieldDetailsMap.put(conditionalFieldDetail.getFieldNameAsInDb(), conditionalFieldDetail);
                 }
                 valueSetter.setStatementValues(fieldDetailsMap);
                 try (ResultSet resultSet = pstmt.executeQuery()) {

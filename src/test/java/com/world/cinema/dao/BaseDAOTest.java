@@ -22,6 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.google.common.collect.Lists;
+import org.testcontainers.shaded.com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -192,13 +194,13 @@ class BaseDAOTest {
         //when
 
         ConditionalFieldDetails hallIdIsEquals = new ConditionalFieldDetails();
-        hallIdIsEquals.setTableFieldName("hall_id");
+        hallIdIsEquals.setFieldNameAsInDb("hall_id");
         hallIdIsEquals.setSign("=");
         hallIdIsEquals.setValue(expectedHallId);
         hallIdIsEquals.setClazz(Integer.class);
 
         ConditionalFieldDetails stateEquals = new ConditionalFieldDetails();
-        stateEquals.setTableFieldName("state");
+        stateEquals.setFieldNameAsInDb("state");
         stateEquals.setSign("=");
         stateEquals.setValue("f");
         stateEquals.setClazz(String.class);
@@ -213,6 +215,32 @@ class BaseDAOTest {
         Assertions.assertNotNull(resultSeats);
         Assertions.assertEquals(1, resultSeats.size());
         Assertions.assertEquals(expectedSeat, resultSeats.get(0));
+    }
+
+
+    @Test
+    void test_selectByIds() throws IllegalAccessException, InstantiationException {
+        CinemaHall aHall = new CinemaHall()
+                .setId(1)
+                .setName("Hall A");
+        CinemaHall bHall = new CinemaHall()
+                .setId(2)
+                .setName("Hall B");
+        CinemaHall cHall = new CinemaHall()
+                .setId(3)
+                .setName("Hall C");
+
+        List<CinemaHall> toInsert = Lists.newArrayList(aHall, bHall, cHall);
+        Set<Integer> idsForSelection = Sets.newHashSet(1, 2);
+
+        boolean isSuccessfullyInserted = baseDAO.insertMultiple(toInsert);
+        Assertions.assertTrue(isSuccessfullyInserted, "Failure on preparation. Check insertMultiple method");
+
+        //when
+        List<CinemaHall> results = baseDAO.selectByIds(CinemaHall.class, new ArrayList<>(idsForSelection));
+        Assertions.assertNotNull(results);
+        Assertions.assertEquals(2, results.size());
+        Assertions.assertTrue(results.stream().allMatch(r -> idsForSelection.contains(r.getId())));
     }
 
 }

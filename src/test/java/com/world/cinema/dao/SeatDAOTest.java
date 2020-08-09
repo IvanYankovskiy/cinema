@@ -79,7 +79,7 @@ class SeatDAOTest {
 
         ConditionalFieldDetails conditionHallIdEquals = new ConditionalFieldDetails();
         conditionHallIdEquals.setClazz(Integer.class);
-        conditionHallIdEquals.setTableFieldName("hall_id");
+        conditionHallIdEquals.setFieldNameAsInDb("hall_id");
         conditionHallIdEquals.setValue(cinemaHall.getId());
         conditionHallIdEquals.setSign("=");
         List<ConditionalFieldDetails> queryParams = new ArrayList<>();
@@ -133,7 +133,7 @@ class SeatDAOTest {
         //prepare query for selecting saved seats
         ConditionalFieldDetails conditionHallIdEquals = new ConditionalFieldDetails();
         conditionHallIdEquals.setClazz(Integer.class);
-        conditionHallIdEquals.setTableFieldName("hall_id");
+        conditionHallIdEquals.setFieldNameAsInDb("hall_id");
         conditionHallIdEquals.setValue(cinemaHall.getId());
         conditionHallIdEquals.setSign("=");
         List<ConditionalFieldDetails> queryParams = new ArrayList<>();

@@ -41,7 +41,7 @@ public class CinemaHallViewService {
 
         ConditionalFieldDetails conditionHallIdEquals = new ConditionalFieldDetails();
         conditionHallIdEquals.setClazz(Integer.class);
-        conditionHallIdEquals.setTableFieldName("hall_id");
+        conditionHallIdEquals.setFieldNameAsInDb("hall_id");
         conditionHallIdEquals.setValue(cinemaHallId);
         conditionHallIdEquals.setSign("=");
         List<ConditionalFieldDetails> queryParams = new ArrayList<>();
@@ -57,8 +57,5 @@ public class CinemaHallViewService {
         List<CinemaHall> cinemaHalls = baseDAO.selectAll(CinemaHall.class);
         return cinemaHallMapper.fromEntitiesToSimpleDTOs(cinemaHalls);
     }
-
-
-
 
 }

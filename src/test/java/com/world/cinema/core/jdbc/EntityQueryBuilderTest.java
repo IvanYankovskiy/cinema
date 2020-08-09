@@ -34,28 +34,28 @@ class EntityQueryBuilderTest {
         String expectedSql = "insert into TICKET (id,movie,date,cost) VALUES (nextval('sequence_name'),?,?,?)";
 
         //when
-        Query query = builder.buildInsertStatement(tableName, fields);
+        Query query = builder.buildInsert(tableName, fields);
         Assertions.assertNotNull(query);
         Assert.assertEquals(expectedSql, query.getSql());
         Collection<FieldDetails> nonConditionalFields = query.getNonConditionalFields();
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("id")
+                    return fieldDetails.getFieldNameAsInDb().equals("id")
                             && Objects.isNull(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("movie")
+                    return fieldDetails.getFieldNameAsInDb().equals("movie")
                             && Integer.valueOf(1).equals(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("date")
+                    return fieldDetails.getFieldNameAsInDb().equals("date")
                             && Integer.valueOf(2).equals(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("cost")
+                    return fieldDetails.getFieldNameAsInDb().equals("cost")
                             && Integer.valueOf(3).equals(fieldDetails.getStatementIndex());
                 }));
     }
@@ -70,18 +70,18 @@ class EntityQueryBuilderTest {
         String expectedSql = "insert into TICKET (id,movie) VALUES (nextval('sequence_name'),?)";
 
         //when
-        Query query = builder.buildInsertStatement(tableName, fields);
+        Query query = builder.buildInsert(tableName, fields);
         Assertions.assertNotNull(query);
         Assert.assertEquals(expectedSql, query.getSql());
         Collection<FieldDetails> nonConditionalFields = query.getNonConditionalFields();
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("id")
+                    return fieldDetails.getFieldNameAsInDb().equals("id")
                             && Objects.isNull(fieldDetails.getStatementIndex());
                 }));
         Assert.assertTrue(nonConditionalFields.stream()
                 .anyMatch(fieldDetails -> {
-                    return fieldDetails.getTableFieldName().equals("movie")
+                    return fieldDetails.getFieldNameAsInDb().equals("movie")
                             && Integer.valueOf(1).equals(fieldDetails.getStatementIndex());
                 }));
     }
