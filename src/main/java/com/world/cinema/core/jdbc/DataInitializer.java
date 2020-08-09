@@ -1,5 +1,6 @@
 package com.world.cinema.core.jdbc;
 
+import com.world.cinema.core.exception.ApplicationInitializationException;
 import com.world.cinema.domain.CinemaHall;
 import com.world.cinema.domain.Seat;
 import lombok.extern.slf4j.Slf4j;
@@ -58,13 +59,13 @@ public class DataInitializer {
                     .setHallId(hall.getId())
                     .setState(possibleStates[possibleStateIndex])
                     .setRow(row)
-                    .setSeat(seat));
+                    .setSeatNumber(seat));
                 }
             }
         }
         boolean isSuccess = baseDAO.insertMultiple(seats);
         if (!isSuccess) {
-            throw new RuntimeException("Faild to fill database with initial data");
+            throw new ApplicationInitializationException();
         }
     }
 

@@ -27,12 +27,10 @@ public class PreparedStatementSetter {
     }
 
     private void getTypeAndSetValue(int parameterIndex, FieldDetails fieldDetails) throws SQLException {
-        Class type = fieldDetails.getClazz();
+        Class<?> type = fieldDetails.getClazz();
         Object value = fieldDetails.getValue();
-        if (fieldDetails instanceof IdFieldDetails) {
-            if (Objects.isNull(value))
-                return;
-
+        if (fieldDetails instanceof IdFieldDetails && Objects.isNull(value)) {
+            return;
         }
         this.pstmt.setObject(parameterIndex, (type.cast(value)));
     }

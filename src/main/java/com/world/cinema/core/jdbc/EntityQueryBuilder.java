@@ -8,11 +8,6 @@ import java.util.*;
 public class EntityQueryBuilder {
 
     public static final String insertSqlTemplate = "insert into :table_name ";
-    public static final String selectAllForClass = "select * from :table_name";
-    public static final String selectEntityById = "select * from :table_name where :id = ?";
-    public static final String selectByParameters = "select * from :table_name where :parameters";
-    public static final String updateSqlById = "update :table_name set :updatable_fields where :id = ?";
-
 
     public Query buildInsertStatement(String tableName, final Collection<FieldDetails> fields) {
         String baseSql = insertSqlTemplate.replace(":table_name", tableName);

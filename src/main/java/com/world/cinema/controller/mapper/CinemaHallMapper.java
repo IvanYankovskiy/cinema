@@ -5,7 +5,6 @@ import com.world.cinema.controller.dto.CinemaHallFullDTO;
 import com.world.cinema.domain.CinemaHall;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,10 +14,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public abstract class CinemaHallMapper {
 
-    @Mappings({
-            @Mapping(target = "id", source = "entity.id"),
-            @Mapping(target = "name", source = "entity.name"),
-    })
+    @Mapping(target = "id", source = "entity.id")
+    @Mapping(target = "name", source = "entity.name")
     public abstract CinemaHallFullDTO fromEntityToDto(CinemaHall entity);
 
     public List<CinemaHallFullDTO> fromEntitiesToDTOs(Collection<CinemaHall> entities) {
@@ -31,10 +28,9 @@ public abstract class CinemaHallMapper {
                 .collect(Collectors.toList());
     }
 
-    @Mappings({
-            @Mapping(target = "id", source = "entity.id"),
-            @Mapping(target = "name", source = "entity.name"),
-    })
+
+    @Mapping(target = "id", source = "entity.id")
+    @Mapping(target = "name", source = "entity.name")
     public abstract CinemaHallDTO fromEntityToSimpleDto(CinemaHall entity);
 
     public List<CinemaHallDTO> fromEntitiesToSimpleDTOs(Collection<CinemaHall> entities) {
@@ -46,7 +42,6 @@ public abstract class CinemaHallMapper {
                 .map(this::fromEntityToSimpleDto)
                 .collect(Collectors.toList());
     }
-
 
 
 }

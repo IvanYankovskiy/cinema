@@ -26,7 +26,7 @@ public class Seat {
     private Integer row;
 
     @ColumnName("seat")
-    private Integer seat;
+    private Integer seatNumber;
 
     @ColumnName("state")
     private String state = "f";
@@ -39,12 +39,12 @@ public class Seat {
         return id.equals(seat1.id) &&
                 hallId.equals(seat1.hallId) &&
                 row.equals(seat1.row) &&
-                seat.equals(seat1.seat) &&
+                seatNumber.equals(seat1.seatNumber) &&
                 state.equals(seat1.state);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hallId, row, seat, state);
+        return Objects.hash(id, hallId, row, seatNumber, state);
     }
 }

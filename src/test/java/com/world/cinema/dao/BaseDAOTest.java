@@ -38,7 +38,7 @@ import java.util.Set;
         initializers = {PostgresSharedContainer.Initializer.class})
 @Testcontainers
 @DisplayName("BaseDAO integration test")
-public class BaseDAOTest {
+class BaseDAOTest {
 
     @Container
     public static PostgreSQLContainer postgreSQLContainer = PostgresSharedContainer.getInstance();
@@ -55,7 +55,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_insertHall_usingSequence() throws IllegalAccessException {
+    void test_insertHall_usingSequence() throws IllegalAccessException {
         CinemaHall entity = new CinemaHall()
                 .setName("TestHall");
         Integer resultId = baseDAO.insert(entity);
@@ -64,7 +64,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_insertSeat_withoutSequence() throws IllegalAccessException {
+    void test_insertSeat_withoutSequence() throws IllegalAccessException {
         CinemaHall entity = new CinemaHall()
                 .setId(789)
                 .setName("TestHall");
@@ -74,7 +74,7 @@ public class BaseDAOTest {
 
         Seat seat = new Seat()
                 .setHallId(hallId)
-                .setSeat(1)
+                .setSeatNumber(1)
                 .setRow(1);
         Integer seatId = baseDAO.insert(seat);
 
@@ -82,7 +82,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_insertMultiple_usingSequence() throws IllegalAccessException {
+    void test_insertMultiple_usingSequence() throws IllegalAccessException {
         CinemaHall entity = new CinemaHall()
                 .setName("TestHall");
         Integer hallId = baseDAO.insert(entity);
@@ -94,7 +94,7 @@ public class BaseDAOTest {
             for (int seat = 0; seat < 10; seat++) {
                 collectionToInsert.add(new Seat()
                         .setHallId(hallId)
-                        .setSeat(seat)
+                        .setSeatNumber(seat)
                         .setRow(currentRow));
             }
         }
@@ -103,7 +103,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_SelectMultiple() throws IllegalAccessException, InstantiationException {
+    void test_SelectMultiple() throws IllegalAccessException, InstantiationException {
         CinemaHall entity = new CinemaHall()
                 .setName("TestHall");
         Integer hallId = baseDAO.insert(entity);
@@ -117,7 +117,7 @@ public class BaseDAOTest {
                 expectedSeats.add(new Seat()
                         .setId(seatId)
                         .setHallId(hallId)
-                        .setSeat(seat)
+                        .setSeatNumber(seat)
                         .setRow(currentRow));
             }
         }
@@ -132,7 +132,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_selectById() throws IllegalAccessException, InstantiationException {
+    void test_selectById() throws IllegalAccessException, InstantiationException {
         CinemaHall expected = new CinemaHall()
                 .setName("TestHall");
         Integer resultId = baseDAO.insert(expected);
@@ -149,7 +149,7 @@ public class BaseDAOTest {
     }
 
     @Test
-    public void test_selectByParameters() throws IllegalAccessException, InstantiationException {
+    void test_selectByParameters() throws IllegalAccessException, InstantiationException {
         CinemaHall expectedHall = new CinemaHall()
                 .setName("TestHall");
         Integer expectedHallId = baseDAO.insert(expectedHall);
@@ -163,7 +163,7 @@ public class BaseDAOTest {
         Assertions.assertNotNull(otherHallId);
 
         Seat expectedSeat = new Seat()
-                .setSeat(1)
+                .setSeatNumber(1)
                 .setHallId(expectedHall.getId())
                 .setRow(1)
                 .setState("f");
@@ -172,7 +172,7 @@ public class BaseDAOTest {
         Assertions.assertNotNull(expectedSeatId);
 
         Seat excludedSeat = new Seat()
-                .setSeat(2)
+                .setSeatNumber(2)
                 .setHallId(expectedHall.getId())
                 .setRow(1)
                 .setState("r");
@@ -181,7 +181,7 @@ public class BaseDAOTest {
         Assertions.assertNotNull(excludedSeatId);
 
         Seat otherSeat = new Seat()
-                .setSeat(1)
+                .setSeatNumber(1)
                 .setHallId(otherHall.getId())
                 .setRow(1)
                 .setState("f");

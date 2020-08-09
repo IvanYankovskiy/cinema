@@ -13,7 +13,7 @@ class CinemaHallMapperTest {
     private CinemaHallMapper mapper = Mappers.getMapper(CinemaHallMapper.class);
 
     @Test
-    public void testFromEntityToDto() {
+    void testFromEntityToDto() {
 
         CinemaHall cinemaHall = new CinemaHall()
                 .setId(1)

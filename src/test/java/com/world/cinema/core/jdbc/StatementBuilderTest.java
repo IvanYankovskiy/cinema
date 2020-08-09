@@ -24,7 +24,7 @@ class StatementBuilderTest {
     private StatementBuilder statementBuilder;
 
     @Test
-    public void test_buildInsertStatement() {
+    void test_buildInsertStatement() {
         String tableName = "TICKET";
         Map<String, FieldDetails> fields = new TreeMap<>();
         fields.put("movie", new FieldDetails("Inception", String.class) );
@@ -45,7 +45,7 @@ class StatementBuilderTest {
      * and FieldDetails in ArrayList with 1 to 1 matching, but it's too late now :)
      */
     @Test
-    public void test_buildInsertStatement_withIdField_sequenceProvided() {
+    void test_buildInsertStatement_withIdField_sequenceProvided() {
         String tableName = "TICKET";
         Map<String, FieldDetails> fields = new TreeMap<>();
         fields.put("id", new IdFieldDetails(null, Integer.class, "movie_id_seq"));
@@ -85,7 +85,7 @@ class StatementBuilderTest {
     }
 
     @Test
-    public void test_buildInsertStatement_withIdField_idIsProvided() {
+    void test_buildInsertStatement_withIdField_idIsProvided() {
         String tableName = "TICKET";
         Map<String, FieldDetails> fields = new TreeMap<>();
         fields.put("id", new IdFieldDetails(12, Integer.class, "movie_id_seq"));

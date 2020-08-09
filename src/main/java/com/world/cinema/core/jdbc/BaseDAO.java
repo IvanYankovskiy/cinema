@@ -1,5 +1,6 @@
 package com.world.cinema.core.jdbc;
 
+import com.world.cinema.core.jdbc.exception.DatabaseException;
 import com.world.cinema.core.jdbc.fields.ConditionalFieldDetails;
 import com.world.cinema.core.jdbc.fields.FieldDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class BaseDAO {
@@ -71,23 +71,8 @@ public class BaseDAO {
         return selectByParameters(sql, expectedEntityClass, queryParams);
     }
 
-    public List<Integer> executeUpdate(Query query) {
-        try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement pstmt = connection.prepareStatement(query.getSql())) {
-                PreparedStatementSetter valueSetter = new PreparedStatementSetter(pstmt);
-                query.setValuesToPreparedStatement(pstmt);
-                int[] batchQueryResults = pstmt.executeBatch();
-                boolean isSucceed = Arrays.stream(batchQueryResults).noneMatch(r -> r < 0);
-                if (isSucceed)
-                    connection.commit();
-                else
-                    connection.rollback();
-                return Arrays.stream(batchQueryResults).boxed().collect(Collectors.toList());
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return new ArrayList<>();
+    public ControllableQuery getControllableQueryForUpdate(Query query) throws SQLException {
+        return new ControllableQuery(query, dataSource.getConnection());
     }
 
     private boolean performBatchModificationQuery(List<Map<String, FieldDetails>> preparedObjectCollection, String sql) {
@@ -126,11 +111,11 @@ public class BaseDAO {
 
                 return id;
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-
+        } catch (SQLException throwable) {
+            String msg = "Error during performing modification query";
+            log.error(msg, throwable);
+            throw new DatabaseException(msg);
         }
-        return null;
     }
 
     private <T> List<T> selectAll(String sql, Class<T> clazz) throws InstantiationException, IllegalAccessException {
@@ -145,9 +130,10 @@ public class BaseDAO {
                 }
                 return queryResults;
             }
-        } catch (SQLException throwables) {
-            log.error("Error during selecting all", throwables);
-            throw new RuntimeException(throwables);
+        } catch (SQLException throwable) {
+            String msg = "Error during selecting all";
+            log.error(msg, throwable);
+            throw new DatabaseException(msg);
         }
     }
 
@@ -165,10 +151,11 @@ public class BaseDAO {
                 }
                 return entity;
             }
-        } catch (SQLException throwables) {
-            log.error("Error during selecting by id", throwables);
+        } catch (SQLException throwable) {
+            String msg = "Error during selecting by id";
+            log.error(msg, throwable);
+            throw new DatabaseException(msg);
         }
-        return null;
     }
 
     private <T> List<T> selectByParameters(String sql, Class<T> resultClazz, List<ConditionalFieldDetails> conditionalFieldDetails) throws InstantiationException, IllegalAccessException {
@@ -189,9 +176,10 @@ public class BaseDAO {
                 }
                 return queryResults;
             }
-        } catch (SQLException throwables) {
-            log.error("Error during selecting by parameters", throwables);
-            throw new RuntimeException(throwables);
+        } catch (SQLException throwable) {
+            String msg = "Error during selecting by parameters";
+            log.error(msg, throwable);
+            throw new DatabaseException(msg);
         }
     }
 

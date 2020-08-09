@@ -11,12 +11,12 @@ class SeatMapperTest {
     private SeatMapper mapper = Mappers.getMapper(SeatMapper.class);
 
     @Test
-    public void testFromEntityToDto() {
+    void testFromEntityToDto() {
         Seat entity = new Seat()
                 .setId(1)
                 .setRow(1)
                 .setHallId(1)
-                .setSeat(1)
+                .setSeatNumber(1)
                 .setState("f");
 
         SeatDTO resultDto = mapper.fromEntityToDto(entity);

@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class StatementBuilder {
 
+    public static final String TABLE_NAME = ":table_name";
     public static final String insertSqlTemplate = "insert into :table_name ";
     public static final String selectAllForClass = "select * from :table_name";
     public static final String selectEntityById = "select * from :table_name where :id = ?";
@@ -18,7 +19,7 @@ public class StatementBuilder {
 
 
     public String buildInsertStatement(String tableName, Map<String, FieldDetails> fields) {
-        String baseSql = insertSqlTemplate.replace(":table_name", tableName);
+        String baseSql = insertSqlTemplate.replace(TABLE_NAME, tableName);
         StringBuilder sb = new StringBuilder(baseSql);
         sb.append("(");
         sb.append(String.join(",", fields.keySet()));
@@ -42,11 +43,11 @@ public class StatementBuilder {
     }
 
     public String buildSelectAllStatement(String tableName) {
-        return selectAllForClass.replace(":table_name", tableName);
+        return selectAllForClass.replace(TABLE_NAME, tableName);
     }
 
     public String buildSelectByIdStatement(String tableName, String idFieldName) {
-        return selectEntityById.replace(":table_name", tableName)
+        return selectEntityById.replace(TABLE_NAME, tableName)
                 .replace(":id", idFieldName);
     }
 
@@ -62,14 +63,14 @@ public class StatementBuilder {
                 sb.append(" and ");
             currentIndex++;
         }
-        return selectByParameters.replace(":table_name", tableName)
+        return selectByParameters.replace(TABLE_NAME, tableName)
                 .replace(":parameters", sb.toString());
 
     }
 
 
     public String buildUpdateById(String tableName, Map<String, FieldDetails> fields) {
-        String baseSql = updateSqlById.replace(":table_name", tableName);
+        String baseSql = updateSqlById.replace(TABLE_NAME, tableName);
         StringBuilder sb = new StringBuilder(baseSql);
         int numOfValues = fields.values().size();
         int currentIndex = 0;

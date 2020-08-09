@@ -23,7 +23,7 @@ class EntityQueryBuilderTest {
     }
 
     @Test
-    public void test_buildInsertStatement_withSequence() {
+    void test_buildInsertStatement_withSequence() {
         String tableName = "TICKET";
         List<FieldDetails> fields = new ArrayList<>();
         fields.add(new IdFieldDetails("id", null, Integer.class, "sequence_name"));
@@ -61,7 +61,7 @@ class EntityQueryBuilderTest {
     }
 
     @Test
-    public void test_buildInsertStatement_withSequence_twoFields() {
+    void test_buildInsertStatement_withSequence_twoFields() {
         String tableName = "TICKET";
         List<FieldDetails> fields = new ArrayList<>();
         fields.add(new IdFieldDetails("id", null, Integer.class, "sequence_name"));
