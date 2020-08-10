@@ -23,13 +23,13 @@ public class CinemaHallController {
         this.cinemaHallViewService = cinemaHallViewService;
     }
 
-    @GetMapping("hall/{id}/seats")
+    @GetMapping(value = "hall/{id}/seats",  produces = "application/json")
     public CinemaHallFullDTO getHallDetails(@PathVariable("id") @NotNull(message = "HallId can't be null or empty")
                                                         Integer hallId) throws IllegalAccessException, InstantiationException {
         return cinemaHallViewService.getCinemaHallDetailsById(hallId);
     }
 
-    @GetMapping("/hall")
+    @GetMapping(value = "/hall",  produces = "application/json")
     public List<CinemaHallDTO> getAllCinemaHalls() throws IllegalAccessException, InstantiationException {
         return cinemaHallViewService.getAllCinemaHalls();
     }

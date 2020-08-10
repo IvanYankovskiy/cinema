@@ -5,15 +5,15 @@ import com.world.cinema.core.jdbc.DataExtractor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import javax.sql.DataSource;
 import java.util.Objects;
 
-@TestConfiguration
+@Configuration
 public class TestDataSourceConfig {
 
     public static PostgreSQLContainer postgreSQLContainer = PostgresSharedContainer.getInstance();
@@ -28,7 +28,7 @@ public class TestDataSourceConfig {
 
     @Primary
     @Bean
-    public DataSource dataSource(PostgreSQLContainer postgreSQLContainer) {
+    public DataSource dataSourceTest(PostgreSQLContainer postgreSQLContainer) {
         if (Objects.isNull(poolConfigFile)) {
             throw new RuntimeException("NO TEST PROPERTIES FILE!!!");
         }
@@ -40,12 +40,7 @@ public class TestDataSourceConfig {
     }
 
     @Bean
-    public DataExtractor dataExtractor() {
-        return new DataExtractor();
-    }
-
-    @Bean
-    public TableCleaner tableCleaner(DataSource dataSource, DataExtractor dataExtractor) {
-        return new TableCleaner(dataSource, dataExtractor);
+    public TableCleaner tableCleaner(DataSource dataSourceTest, DataExtractor dataExtractorTest) {
+        return new TableCleaner(dataSourceTest, dataExtractorTest);
     }
 }

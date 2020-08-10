@@ -2,6 +2,7 @@ package com.world.cinema.core.config;
 
 import com.world.cinema.core.jdbc.BaseDAO;
 import com.world.cinema.core.jdbc.DataExtractor;
+import com.world.cinema.core.jdbc.StatementBuilder;
 import com.world.cinema.dao.SeatDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,4 +25,13 @@ public class DaoBeansConfig {
         return new SeatDAO(baseDao);
     }
 
+    @Bean
+    public DataExtractor dataExtractor() {
+        return new DataExtractor();
+    }
+
+    @Bean
+    public StatementBuilder stmntBuilder() {
+        return new StatementBuilder();
+    }
 }

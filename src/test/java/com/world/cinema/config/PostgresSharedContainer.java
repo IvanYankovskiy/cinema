@@ -33,9 +33,12 @@ public class PostgresSharedContainer extends PostgreSQLContainer<PostgresSharedC
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
                     "jdbcUrl=" + container.getJdbcUrl(),
-                    "spring.datasource.username=" + container.getUsername(),
-                    "spring.datasource.password=" + container.getPassword()
+                    "username=" + container.getUsername(),
+                    "password=" + container.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
+            System.setProperty("DB_URL", container.getJdbcUrl());
+            System.setProperty("DB_USERNAME", container.getUsername());
+            System.setProperty("DB_PASSWORD", container.getPassword());
             container.waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(10)));
         }
     }
