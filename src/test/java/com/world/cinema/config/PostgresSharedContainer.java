@@ -22,9 +22,6 @@ public class PostgresSharedContainer extends PostgreSQLContainer<PostgresSharedC
         if (container == null) {
             container = new PostgresSharedContainer();
         }
-        container.addEnv("POSTGRES_USER", "application");
-        container.addEnv("POSTGRES_PASSWORD", "application");
-        container.addEnv("POSTGRES_DB", "cinema");
         return container;
     }
 
@@ -36,9 +33,6 @@ public class PostgresSharedContainer extends PostgreSQLContainer<PostgresSharedC
                     "username=" + container.getUsername(),
                     "password=" + container.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
-            System.setProperty("DB_URL", container.getJdbcUrl());
-            System.setProperty("DB_USERNAME", container.getUsername());
-            System.setProperty("DB_PASSWORD", container.getPassword());
             container.waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(10)));
         }
     }
